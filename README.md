@@ -34,9 +34,9 @@ Para que el envío de correos funcione, necesitas configurar **EmailJS** y agreg
 1.  Abre el archivo `script.js` en esta carpeta.
 2.  Busca las primeras líneas y reemplaza los valores:
     ```javascript
-    const SERVICE_ID = 'TU_SERVICE_ID_AQUI'; 
-    const TEMPLATE_ID = 'TU_TEMPLATE_ID_AQUI';
-    const PUBLIC_KEY = 'TU_PUBLIC_KEY_AQUI';
+    const SERVICE_ID = 'service_f1fb8yb'; 
+    const TEMPLATE_ID = 'template_h35fj3k';
+    const PUBLIC_KEY = 'U7oI9BGaQ__4rYrt8';
     ```
 3.  Guarda el archivo.
 

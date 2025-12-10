@@ -1,9 +1,9 @@
 // EmailJS Configuration
 // -----------------------------------------------------
 // REPLACE THESE VALUES WITH YOUR ACTUAL KEYS FROM EMAILJS
-const SERVICE_ID = 'YOUR_SERVICE_ID'; 
-const TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
-const PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
+const SERVICE_ID = 'service_f1fb8yb';
+const TEMPLATE_ID = 'template_h35fj3k';
+const PUBLIC_KEY = 'U7oI9BGaQ__4rYrt8';
 // -----------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = canvas.offsetHeight * ratio;
         ctx.scale(ratio, ratio);
     }
-    
+
     // Initial resize
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
@@ -106,9 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (SERVICE_ID === 'YOUR_SERVICE_ID' || PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
-             showMessage('Error: Configuración de EmailJS incompleta. Revise el código.', 'error');
-             alert('ATENCIÓN: Debe configurar sus claves de EmailJS en el archivo script.js para que esto funcione.');
-             return;
+            showMessage('Error: Configuración de EmailJS incompleta. Revise el código.', 'error');
+            alert('ATENCIÓN: Debe configurar sus claves de EmailJS en el archivo script.js para que esto funcione.');
+            return;
         }
 
         // Show loading state
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // or usage of an attachment if supported by the tier.
         // A simpler way for text-only templates is sending the link, but base64 is too long for URL params often.
         // We will send it as a parameter 'message' or 'signature_image' assuming the template has {{{signature_image}}}.
-        
+
         const signatureData = canvas.toDataURL('image/png');
 
         const templateParams = {
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
-            .then(function(response) {
+            .then(function (response) {
                 console.log('SUCCESS!', response.status, response.text);
                 showMessage('¡Firma enviada correctamente!', 'success');
                 sendBtn.disabled = false;
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 // Optional: clear after send
                 // ctx.clearRect(0, 0, canvas.width, canvas.height); 
-            }, function(error) {
+            }, function (error) {
                 console.log('FAILED...', error);
                 showMessage('Error al enviar. Intente nuevamente.', 'error');
                 sendBtn.disabled = false;
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showMessage(text, type) {
         statusMessage.textContent = text;
         statusMessage.className = `status-message ${type}`;
-        
+
         // Auto hide after 5 seconds
         setTimeout(() => {
             statusMessage.className = 'status-message';
