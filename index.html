@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firma Digital - SparkGy</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13 10V3L4 14H11V21L20 10H13Z" fill="#0066CC" stroke="#0066CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>SparkGy Firma</h1>
+            </div>
+            <p class="subtitle">Por favor, realice su firma en el recuadro a continuación.</p>
+        </header>
+
+        <main>
+            <div class="canvas-container">
+                <canvas id="signature-pad"></canvas>
+                <div class="placeholder-text">Firme aquí</div>
+            </div>
+
+            <div class="controls">
+                <button id="clear-btn" class="btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" />
+                    </svg>
+                    Borrar
+                </button>
+                <button id="send-btn" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                    </svg>
+                    Enviar Firma
+                </button>
+            </div>
+            
+            <div id="status-message" class="status-message"></div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Spark Energy Solutions</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
