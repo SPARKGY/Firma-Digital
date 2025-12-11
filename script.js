@@ -17,6 +17,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const placeholderText = document.querySelector('.placeholder-text');
     const statusMessage = document.getElementById('status-message');
 
+    // New: Details Elements
+    const detailsContainer = document.getElementById('details-container');
+    const detailId = document.getElementById('detail-id');
+    const detailSolicitud = document.getElementById('detail-solicitud');
+    const detailDesc = document.getElementById('detail-descripcion');
+    const detailQty = document.getElementById('detail-cantidad');
+
+    // 1. Parse URL Parameters on Load
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramId = urlParams.get('id');
+    const paramSolicitud = urlParams.get('solicitud'); // or 'numero_solicitud'
+    const paramDesc = urlParams.get('description');
+    const paramQty = urlParams.get('quantity');
+
+    // If params exist, show them
+    if (paramId || paramSolicitud || paramDesc || paramQty) {
+        detailsContainer.style.display = 'block';
+        if (paramId) detailId.textContent = paramId;
+        if (paramSolicitud) detailSolicitud.textContent = paramSolicitud;
+        if (paramDesc) detailDesc.textContent = paramDesc;
+        if (paramQty) detailQty.textContent = paramQty;
+    }
+
     let isDrawing = false;
     let hasSigned = false;
 
@@ -98,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMessage.textContent = '';
     });
 
-    // Send Button
+    // Send Button Logic
     sendBtn.addEventListener('click', () => {
         if (!hasSigned) {
             showMessage('Por favor, firme antes de enviar.', 'error');
@@ -106,34 +129,60 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (SERVICE_ID === 'YOUR_SERVICE_ID' || PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
-            showMessage('Error: Configuración de EmailJS incompleta. Revise el código.', 'error');
-            alert('ATENCIÓN: Debe configurar sus claves de EmailJS en el archivo script.js para que esto funcione.');
+            showMessage('Error: Configuración de EmailJS incompleta.', 'error');
             return;
         }
 
-        // Show loading state
+        // Disable button immediately
         sendBtn.disabled = true;
+        sendBtn.innerHTML = 'Obteniendo ubicación...';
+
+        // 2. Get Geolocation and Timestamp
+        if (!navigator.geolocation) {
+            // Geolocation not supported
+            sendEmail("Ubicación no soportada por el navegador");
+        } else {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const long = position.coords.longitude;
+                    const locationString = `Lat: ${lat}, Long: ${long} (Google Maps: https://maps.google.com/?q=${lat},${long})`;
+                    sendEmail(locationString);
+                },
+                (error) => {
+                    console.warn("Geolocation error:", error);
+                    let errorMsg = "Ubicación no disponible (Permiso denegado o error)";
+                    sendEmail(errorMsg);
+                },
+                { timeout: 10000, maximumAge: 0 } // wait max 10s
+            );
+        }
+    });
+
+    function sendEmail(locationInfo) {
         sendBtn.innerHTML = 'Enviando...';
 
-        // Convert canvas signature to data URL (image)
-        // Note: EmailJS templates usually need a hidden field to accept the huge base64 string, 
-        // or usage of an attachment if supported by the tier.
-        // A simpler way for text-only templates is sending the link, but base64 is too long for URL params often.
-        // We will send it as a parameter 'message' or 'signature_image' assuming the template has {{{signature_image}}}.
-
         const signatureData = canvas.toDataURL('image/png');
+        const timestamp = new Date().toLocaleString('es-ES'); // Localized timestamp
 
         const templateParams = {
             to_email: 'sistematizacion@sparkgy.com',
-            subject: 'Nueva Firma Recibida',
+            subject: `Nueva Firma: Solicitud ${paramSolicitud || '-'}`,
             message: 'Se ha recibido una nueva firma digital.',
-            signature_image: signatureData // This requires the template to have <img src="{{{signature_image}}}" />
+            signature_image: signatureData,
+            // New Fields
+            id: paramId || 'N/A',
+            solicitud: paramSolicitud || 'N/A',
+            description: paramDesc || 'N/A',
+            quantity: paramQty || 'N/A',
+            timestamp: timestamp,
+            location: locationInfo
         };
 
         emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
             .then(function (response) {
                 console.log('SUCCESS!', response.status, response.text);
-                showMessage('¡Firma enviada correctamente!', 'success');
+                showMessage('¡Firma y datos enviados correctamente!', 'success');
                 sendBtn.disabled = false;
                 sendBtn.innerHTML = `
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -141,11 +190,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     </svg>
                     Enviar Firma
                 `;
-                // Optional: clear after send
-                // ctx.clearRect(0, 0, canvas.width, canvas.height); 
             }, function (error) {
                 console.log('FAILED...', error);
-                showMessage('Error al enviar. Intente nuevamente.', 'error');
+                showMessage('Error al enviar. Intente más tarde.', 'error');
                 sendBtn.disabled = false;
                 sendBtn.innerHTML = `
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -154,13 +201,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     Enviar Firma
                 `;
             });
-    });
+    }
 
     function showMessage(text, type) {
         statusMessage.textContent = text;
         statusMessage.className = `status-message ${type}`;
-
-        // Auto hide after 5 seconds
         setTimeout(() => {
             statusMessage.className = 'status-message';
         }, 5000);

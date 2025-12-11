@@ -1,49 +1,62 @@
 # Firma Digital SparkGy
 
-Este proyecto es una página web simple y elegante para capturar firmas digitales y enviarlas automáticamente por correo electrónico utilizando EmailJS.
+Este proyecto es una página web simple y elegante para capturar firmas digitales, **incluyendo detalles del pedido y ubicación**, y enviarlas automáticamente por correo electrónico.
+
+## Características Nuevas
+*   **Lectura de Datos**: Captura `id`, `solicitud`, `description` y `quantity` desde el enlace.
+*   **Geolocalización**: Captura automáticamente las coordenadas GPS al enviar.
+*   **Timestamp**: Registra la fecha y hora exacta de la firma.
+
+## Cómo Usar (Formato del Link)
+
+Para pre-cargar los datos, debes enviar el link al cliente con los parámetros al final:
+
+`https://sparkgy.github.io/Firma-Digital/index.html?id=123&solicitud=REQ-001&description=Cableado&quantity=10`
+
+*   **id**: Identificador único.
+*   **solicitud**: Número de solicitud/orden.
+*   **description**: Descripción breve del item.
+*   **quantity**: Cantidad.
+
+Si no se envían parámetros, la página funcionará pero mostrará campos vacíos en el detalle.
 
 ## Configuración Requerida
 
-Para que el envío de correos funcione, necesitas configurar **EmailJS** y agregar tus credenciales en el archivo `script.js`.
-
 ### Pasos para EmailJS:
 
-1.  **Crear cuenta y Servicio**:
-    *   Entra a [emailjs.com](https://www.emailjs.com/) y crea una cuenta gratuita.
-    *   Ve a la pestaña **"Email Services"** y haz clic en "Add New Service".
-    *   Selecciona **Outlook** (o tu proveedor de correo) y sigue los pasos para conectarlo.
-    *   Copia el **Service ID** (ej. `service_xxxx`).
+1.  Actualiza tu **Service ID**, **Template ID** y **Public Key** en `script.js` si aún no lo has hecho.
+2.  **IMPORTANTE**: Debes actualizar tu plantilla en EmailJS para recibir los nuevos datos.
 
-2.  **Crear Plantilla (Template)**:
-    *   Ve a la pestaña **"Email Templates"** y crea una nueva.
-    *   En el cuerpo del correo, asegúrate de ir a la pestaña "HTML" (icono `<>`) si quieres incrustar la imagen, o simplemente usa el editor visual.
-    *   **IMPORTANTE**: Para ver la firma, debes agregar este código en el contenido de tu plantilla HTML:
-        ```html
-        <p>Se ha recibido una nueva firma:</p>
-        <img src="{{{signature_image}}}" alt="Firma del cliente" style="width: 300px; border: 1px solid #ccc;">
-        ```
-        *Nota las tres llaves `{{{ }}}` para evitar que se escape el código de la imagen base64.*
-    *   Guarda la plantilla y copia el **Template ID** (ej. `template_xxxx`).
+#### Nuevo código para la Plantilla de EmailJS:
 
-3.  **Obtener Public Key**:
-    *   Ve a la pestaña **"Account"** (o tu perfil).
-    *   Copia tu **Public Key** (ej. `user_xxxx` o una cadena alfanumérica).
+Copia y pega esto en el código HTML de tu plantilla:
 
-### Actualizar el Código:
+```html
+<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
+    <h2 style="color: #0066CC;">Nueva Firma Recibida</h2>
+    
+    <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+        <p><strong>Solicitud #:</strong> {{solicitud}}</p>
+        <p><strong>ID:</strong> {{id}}</p>
+        <p><strong>Descripción:</strong> {{description}}</p>
+        <p><strong>Cantidad:</strong> {{quantity}}</p>
+        <p><strong>Fecha/Hora:</strong> {{timestamp}}</p>
+        <p><strong>Ubicación:</strong> <a href="{{location}}" target="_blank">{{location}}</a></p>
+    </div>
 
-1.  Abre el archivo `script.js` en esta carpeta.
-2.  Busca las primeras líneas y reemplaza los valores:
-    ```javascript
-    const SERVICE_ID = 'service_f1fb8yb'; 
-    const TEMPLATE_ID = 'template_h35fj3k';
-    const PUBLIC_KEY = 'U7oI9BGaQ__4rYrt8';
-    ```
-3.  Guarda el archivo.
+    <div style="margin: 20px 0; padding: 15px; border: 2px dashed #e0e0e0; border-radius: 8px; background-color: #fff;">
+        <p style="margin-top: 0; font-size: 14px; color: #666;">Firma capturada:</p>
+        <img src="{{{signature_image}}}" alt="Firma del Cliente" style="max-width: 100%; height: auto; border: 1px solid #ccc; background: #fff;" />
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+    <p style="font-size: 12px; color: #999;">
+        Recibido desde la web de Firma Digital SparkGy
+    </p>
+</div>
+```
 
 ## Cómo Publicar en GitHub Pages
 
-1.  Sube estos 3 archivos (`index.html`, `style.css`, `script.js`) a tu repositorio de GitHub.
-2.  Ve a `Settings` > `Pages`.
-3.  En "Source", selecciona `Deploy from a branch`.
-4.  Selecciona la rama `main` (o `master`) y la carpeta `/root`.
-5.  Guarda. En unos minutos tu página estará activa.
+1.  Haz Push de los cambios a GitHub.
+2.  Espera 1-2 minutos para que se actualice automáticamente.
